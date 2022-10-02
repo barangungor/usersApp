@@ -23,6 +23,7 @@ class NetworkService {
     )
         .then((value) async {
       var result;
+
       try {
         result = json.decode(utf8.decode(value.bodyBytes));
       } catch (e) {
@@ -30,10 +31,12 @@ class NetworkService {
       }
       return result;
     }).onError((error, stackTrace) => Future.error(error.toString()));
-    return response;
+    return response is Map ? true : false;
   }
 
   Future putMethod(url, body) async {
+    print(url);
+    print(body);
     final uri = Uri.parse(url);
     var response = await _client!
         .put(
@@ -68,6 +71,7 @@ class NetworkService {
   }
 
   Future getMethod(url, {headers}) async {
+    print(url);
     final uri = Uri.parse(url);
     var returnData = {"data": [], "error": ''};
     await _client!.get(uri, headers: headers).then((value) async {

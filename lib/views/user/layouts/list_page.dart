@@ -16,7 +16,6 @@ class ListPage extends StatefulWidget {
 class _ListPageState extends State<ListPage> {
   Future? getUsers;
   ScrollController scrollController = ScrollController();
-  var scrollHeight;
 
   @override
   void initState() {
@@ -24,6 +23,14 @@ class _ListPageState extends State<ListPage> {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
         getUsers = context.read<UserModel>().getUsers();
+      });
+      scrollController.addListener(() {
+        if (scrollController.position.maxScrollExtent ==
+            scrollController.position.pixels) {
+          context
+              .read<UserModel>()
+              .getUsers(page: context.read<UserModel>().userPage + 1);
+        }
       });
     });
   }
@@ -56,20 +63,14 @@ class _ListPageState extends State<ListPage> {
               case ConnectionState.done:
                 return Consumer<UserModel>(
                   builder: (newcontext, viewModel, child) {
-                    print(scrollHeight);
                     return ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 100),
                       controller: scrollController,
                       itemCount: viewModel.users?.length,
                       itemBuilder: (context, index) {
                         final data = viewModel.users?[index];
-                        if (scrollHeight != null &&
-                            index == viewModel.users!.length - 1) {
-                          scrollController.animateTo(scrollHeight,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.linear);
-                        }
                         return ListTile(
-                            title: Text(
+                            title: Text('${data?.id} - '
                                 '${data?.name ?? ''} ${data?.surname ?? ''}'),
                             subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,21 +94,12 @@ class _ListPageState extends State<ListPage> {
                                 onSelected: (value) async {
                                   switch (value) {
                                     case 1:
-                                      scrollHeight =
-                                          scrollController.position.pixels;
                                       Navigator.push(
-                                              context,
-                                              CupertinoPageRoute(
-                                                  builder: (context) =>
-                                                      UserCreateUpdatePage(
-                                                          user: data)))
-                                          .whenComplete(() {
-                                        setState(() {
-                                          getUsers = context
-                                              .read<UserModel>()
-                                              .getUsers();
-                                        });
-                                      });
+                                          context,
+                                          CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  UserCreateUpdatePage(
+                                                      user: data)));
                                       break;
                                     case 2:
                                       BuildContext? dialogContext;

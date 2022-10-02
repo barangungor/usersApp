@@ -80,8 +80,21 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
+                    readOnly: true,
                     controller: birthdateController,
                     decoration: inputStyle('Doğum Tarihi'),
+                    onTap: () async {
+                      showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(1950),
+                              lastDate: DateTime.now())
+                          .then((value) {
+                        if (value != null) {
+                          birthdateController.text = value.toString();
+                        }
+                      });
+                    },
                     validator: (value) {
                       return value == null || value.trim().isEmpty == true
                           ? 'Bu alan boş geçilemez'
@@ -117,6 +130,7 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: sallaryController,
+                    keyboardType: TextInputType.number,
                     decoration: inputStyle('Maaş'),
                     validator: (value) {
                       return value == null || value.trim().isEmpty == true
@@ -142,6 +156,7 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                           'surname': surnameController.text,
                           'birthdate': birthdateController.text,
                           'phone_number': phoneNumberController.text,
+                          'identity': identityController.text,
                           'sallary': sallaryController.text
                         };
                         if (widget.user == null) {
@@ -156,6 +171,7 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                                     : 'İşlem başarısız');
                           });
                         } else {
+                          bodyData['id'] = widget.user!.id.toString();
                           userController.updateUser(bodyData).then((value) {
                             try {
                               Navigator.pop(dialogContext!);
