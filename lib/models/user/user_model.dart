@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class User {
   int? id;
   String? name, surname, phoneNumber, identity;
@@ -13,13 +15,13 @@ class User {
       required this.sallary});
 
   User.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = int.tryParse(json['id'].toString()) ?? -1;
     name = json['name'];
     surname = json['surname'];
-    birthDate = json['birthdate'];
+    birthDate = DateFormat("yyyy-MM-dd").parse(json['birthdate']);
     phoneNumber = json['phone_number'];
-    identity = json['identity'];
-    sallary = json['sallary'];
+    identity = json['identity'].toString();
+    sallary = double.tryParse(json['sallary'].toString()) ?? 0.0;
   }
 
   Map<String, dynamic> toJson() {
