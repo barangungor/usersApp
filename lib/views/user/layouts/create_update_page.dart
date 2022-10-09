@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:usersapp/controllers/user/user_controller.dart';
 import 'package:usersapp/models/user/user_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class UserCreateUpdatePage extends StatefulWidget {
   const UserCreateUpdatePage({Key? key, this.user}) : super(key: key);
@@ -42,7 +43,7 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
 
   @override
   Widget build(BuildContext context) {
-    final userController = Provider.of<UserModel>(context);
+    final userController = Provider.of<UserController>(context);
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
@@ -50,7 +51,7 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
       child: Scaffold(
         appBar: AppBar(
             title: Text(
-                'Kulanıcı ${widget.user == null ? 'Oluştur' : 'Düzenle'} ')),
+                '${AppLocalizations.of(context)!.user} ${widget.user == null ? AppLocalizations.of(context)!.create : AppLocalizations.of(context)!.update} ')),
         body: SingleChildScrollView(
           child: Form(
               key: formKey,
@@ -60,10 +61,10 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                   TextFormField(
                     controller: nameController,
                     textInputAction: TextInputAction.next,
-                    decoration: inputStyle('İsim'),
+                    decoration: inputStyle(AppLocalizations.of(context)!.name),
                     validator: (value) {
                       return value == null || value.trim().isEmpty == true
-                          ? 'Bu alan boş geçilemez'
+                          ? AppLocalizations.of(context)!.cannotNull
                           : null;
                     },
                   ),
@@ -71,10 +72,11 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                   TextFormField(
                     controller: surnameController,
                     textInputAction: TextInputAction.next,
-                    decoration: inputStyle('Soyisim'),
+                    decoration:
+                        inputStyle(AppLocalizations.of(context)!.surname),
                     validator: (value) {
                       return value == null || value.trim().isEmpty == true
-                          ? 'Bu alan boş geçilemez'
+                          ? AppLocalizations.of(context)!.cannotNull
                           : null;
                     },
                   ),
@@ -82,7 +84,8 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                   TextFormField(
                     readOnly: true,
                     controller: birthdateController,
-                    decoration: inputStyle('Doğum Tarihi'),
+                    decoration:
+                        inputStyle(AppLocalizations.of(context)!.birthday),
                     onTap: () async {
                       showDatePicker(
                               context: context,
@@ -97,7 +100,7 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                     },
                     validator: (value) {
                       return value == null || value.trim().isEmpty == true
-                          ? 'Bu alan boş geçilemez'
+                          ? AppLocalizations.of(context)!.cannotNull
                           : null;
                     },
                   ),
@@ -107,10 +110,11 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                     keyboardType: TextInputType.number,
                     maxLength: 10,
                     textInputAction: TextInputAction.next,
-                    decoration: inputStyle('Telefon Numarası'),
+                    decoration: inputStyle(
+                        '${AppLocalizations.of(context)!.phone} ${AppLocalizations.of(context)!.number}'),
                     validator: (value) {
                       return value == null || value.trim().isEmpty == true
-                          ? 'Bu alan boş geçilemez'
+                          ? AppLocalizations.of(context)!.cannotNull
                           : null;
                     },
                   ),
@@ -120,26 +124,30 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                     keyboardType: TextInputType.number,
                     maxLength: 11,
                     textInputAction: TextInputAction.next,
-                    decoration: inputStyle('Kimlik Numarası'),
+                    decoration: inputStyle(
+                        '${AppLocalizations.of(context)!.identity} ${AppLocalizations.of(context)!.number}'),
                     validator: (value) {
                       return value == null || value.trim().isEmpty == true
-                          ? 'Bu alan boş geçilemez'
-                          : null;
+                          ? AppLocalizations.of(context)!.cannotNull
+                          : userController.checkIdentity(value) == false
+                              ? AppLocalizations.of(context)!.unverifiedIdentity
+                              : null;
                     },
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: sallaryController,
                     keyboardType: TextInputType.number,
-                    decoration: inputStyle('Maaş'),
+                    decoration:
+                        inputStyle(AppLocalizations.of(context)!.sallary),
                     validator: (value) {
                       return value == null || value.trim().isEmpty == true
-                          ? 'Bu alan boş geçilemez'
+                          ? AppLocalizations.of(context)!.cannotNull
                           : null;
                     },
                   ),
                   TextButton(
-                    child: const Text('Kaydet'),
+                    child: Text(AppLocalizations.of(context)!.save),
                     onPressed: () async {
                       if (formKey.currentState?.validate() == true) {
                         BuildContext? dialogContext;
@@ -160,27 +168,35 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                           'sallary': sallaryController.text
                         };
                         if (widget.user == null) {
-                          userController.createUser(bodyData).then((value) {
+                          userController
+                              .createUser(bodyData, context)
+                              .then((value) {
                             try {
                               Navigator.pop(dialogContext!);
                             } catch (e) {}
                             showProcessResult(
                                 context,
                                 value == true
-                                    ? 'İşlem başarılı'
-                                    : 'İşlem başarısız');
+                                    ? AppLocalizations.of(context)!
+                                        .successProcess
+                                    : AppLocalizations.of(context)!
+                                        .failProcess);
                           });
                         } else {
                           bodyData['id'] = widget.user!.id.toString();
-                          userController.updateUser(bodyData).then((value) {
+                          userController
+                              .updateUser(bodyData, context)
+                              .then((value) {
                             try {
                               Navigator.pop(dialogContext!);
                             } catch (e) {}
                             showProcessResult(
                                 context,
                                 value == true
-                                    ? 'İşlem başarılı'
-                                    : 'İşlem başarısız');
+                                    ? AppLocalizations.of(context)!
+                                        .successProcess
+                                    : AppLocalizations.of(context)!
+                                        .failProcess);
                           });
                         }
                       }
@@ -188,7 +204,7 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                   ),
                   if (widget.user != null)
                     TextButton(
-                      child: const Text('Sil'),
+                      child: Text(AppLocalizations.of(context)!.delete),
                       onPressed: () async {
                         BuildContext? dialogContext;
                         showDialog(
@@ -200,7 +216,7 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                           },
                         );
                         await userController
-                            .deleteUser(widget.user?.id)
+                            .deleteUser(widget.user?.id, context)
                             .then((value) {
                           try {
                             Navigator.pop(dialogContext!);
@@ -210,8 +226,10 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                             builder: (context) {
                               return AlertDialog(
                                 content: Text(value == true
-                                    ? 'İşlem başarılı'
-                                    : 'İşlem başarısız'),
+                                    ? AppLocalizations.of(context)!
+                                        .successProcess
+                                    : AppLocalizations.of(context)!
+                                        .failProcess),
                               );
                             },
                           ).whenComplete(() {
@@ -240,7 +258,7 @@ class _UserCreateUpdatePageState extends State<UserCreateUpdatePage> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: const Text('Tamam'))
+                child: Text(AppLocalizations.of(context)!.ok))
           ],
         );
       },

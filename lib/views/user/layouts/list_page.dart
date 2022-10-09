@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:usersapp/controllers/user/user_controller.dart';
 import 'package:usersapp/views/user/layouts/create_update_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ListPage extends StatefulWidget {
   const ListPage({Key? key}) : super(key: key);
@@ -22,14 +23,13 @@ class _ListPageState extends State<ListPage> {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
-        getUsers = context.read<UserModel>().getUsers();
+        getUsers = context.read<UserController>().getUsers(context);
       });
       scrollController.addListener(() {
         if (scrollController.position.maxScrollExtent ==
             scrollController.position.pixels) {
-          context
-              .read<UserModel>()
-              .getUsers(page: context.read<UserModel>().userPage + 1);
+          context.read<UserController>().getUsers(
+              page: context.read<UserController>().userPage + 1, context);
         }
       });
     });
@@ -47,7 +47,7 @@ class _ListPageState extends State<ListPage> {
                       builder: (context) => const UserCreateUpdatePage()))
               .whenComplete(() {
             setState(() {
-              getUsers = context.read<UserModel>().getUsers();
+              getUsers = context.read<UserController>().getUsers(context);
             });
           });
         },
@@ -61,7 +61,7 @@ class _ListPageState extends State<ListPage> {
               case ConnectionState.waiting:
                 return buildLoading();
               case ConnectionState.done:
-                return Consumer<UserModel>(
+                return Consumer<UserController>(
                   builder: (newcontext, viewModel, child) {
                     return ListView.builder(
                       padding: const EdgeInsets.only(bottom: 100),
@@ -77,14 +77,16 @@ class _ListPageState extends State<ListPage> {
                                 children: [
                                   Row(
                                     children: [
-                                      const Text('Telefon Numarası: '),
+                                      Text(
+                                          '${AppLocalizations.of(context)!.phone} ${AppLocalizations.of(context)!.number}: '),
                                       Flexible(
                                           child: Text(data?.phoneNumber ?? '')),
                                     ],
                                   ),
                                   Row(
                                     children: [
-                                      const Text('Kimlik Numarası: '),
+                                      Text(
+                                          '${AppLocalizations.of(context)!.identity} ${AppLocalizations.of(context)!.number} : '),
                                       Flexible(
                                           child: Text(data?.identity ?? '')),
                                     ],
@@ -113,7 +115,7 @@ class _ListPageState extends State<ListPage> {
                                         },
                                       );
                                       await viewModel
-                                          .deleteUser(data?.id)
+                                          .deleteUser(data?.id, context)
                                           .then((value) {
                                         try {
                                           Navigator.pop(dialogContext!);
@@ -123,8 +125,12 @@ class _ListPageState extends State<ListPage> {
                                           builder: (context) {
                                             return AlertDialog(
                                               content: Text(value == true
-                                                  ? 'İşlem başarılı'
-                                                  : 'İşlem başarısız'),
+                                                  ? AppLocalizations.of(
+                                                          context)!
+                                                      .successProcess
+                                                  : AppLocalizations.of(
+                                                          context)!
+                                                      .failProcess),
                                             );
                                           },
                                         );
@@ -134,13 +140,17 @@ class _ListPageState extends State<ListPage> {
                                   }
                                 },
                                 itemBuilder: (context) => [
-                                      const PopupMenuItem(
+                                      PopupMenuItem(
                                         value: 1,
-                                        child: Text("Düzenle"),
+                                        child: Text(
+                                            AppLocalizations.of(context)!
+                                                .update),
                                       ),
-                                      const PopupMenuItem(
+                                      PopupMenuItem(
                                         value: 2,
-                                        child: Text("Sil"),
+                                        child: Text(
+                                            AppLocalizations.of(context)!
+                                                .delete),
                                       )
                                     ]));
                       },

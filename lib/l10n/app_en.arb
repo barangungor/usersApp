@@ -1,0 +1,21 @@
+{
+    "ok": "Ok",
+    "save": "Save",
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete",
+    "name": "Name",
+    "surname": "Surname",
+    "birthday": "Birthday",
+    "sallary": "Sallary",
+    "user": "User",
+    "users": "Users",
+    "phone": "Phone",
+    "identity": "Identity",
+    "number": "Number",
+    "cannotNull": "Can not be null",
+    "unverifiedIdentity": "Identity no is unverified",
+    "successProcess": "Process Succeeded",
+    "failProcess": "Process Failed",
+    "somethingWentWrong": "Something Went Wrong"
+}
