@@ -1,0 +1,21 @@
+{
+    "ok": "Tamam",
+    "save": "Kaydet",
+    "create": "Oluştur",
+    "update": "Düzenle",
+    "delete": "Sil",
+    "name": "İsim",
+    "surname": "Soyisim",
+    "birthday": "Doğum Tarihi",
+    "sallary": "Maaş",
+    "user": "Kullanıcı",
+    "users": "Kullanıcılar",
+    "phone": "Telefon",
+    "identity": "Kimlik",
+    "number": "Numarası",
+    "cannotNull": "Bu alan boş geçilemez",
+    "unverifiedIdentity": "Geçersiz kimlik numarası",
+    "successProcess": "İşlem Başarılı",
+    "failProcess": "İşlem Başarısız",
+    "somethingWentWrong": "Bir Hata Oluştu"
+}
